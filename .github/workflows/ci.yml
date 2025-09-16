@@ -1,0 +1,19 @@
+# This automates testing on every push/PR.
+name: CI for RAG MLOps
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Run RAG tests
+      run: python scripts/mlops_automation.py
+    - name: Log to MLflow (if MLflow server available)
+      run: mlflow experiments list  # Basic check
