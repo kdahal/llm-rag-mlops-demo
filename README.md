@@ -1,3 +1,5 @@
+[![Tests](https://github.com/kdahal/llm-rag-mlops-demo/actions/workflows/test.yml/badge.svg)](https://github.com/kdahal/llm-rag-mlops-demo/actions)
+
 # llm-rag-mlops-demo
 A demo repository for RAG implementations in LLMs with MLOps automation scripts using open-source tools.
 
@@ -69,7 +71,17 @@ Copy the corrected code into a Jupyter cell.
 Ensure you’re in the correct directory (use os.chdir("your_project_path") if needed).
 Execute the cell. The notebook should load the document, create a vector store, run the query, log results to MLflow, and print the answer.
 
+## Testing
+Install pytest: `pip install pytest`
 
+Run tests: `pytest tests/ -v`
+
+- `test_document_loading_and_splitting`: Verifies doc loading/splitting.
+- `test_embeddings_and_vectorstore`: Checks embedding generation and FAISS indexing.
+- `test_rag_query`: End-to-end query on sample data (expects "AI" or "artificial intelligence").
+- `test_mlflow_logging`: Ensures MLflow params log without errors.
+
+All tests pass in ~16s on CPU. Warnings? See "Troubleshooting."
 
 Notes
 
