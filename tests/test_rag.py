@@ -1,14 +1,19 @@
 import pytest
 import os
+import warnings  # For suppressing deprecation warnings
 from dotenv import load_dotenv
-from langchain_community.document_loaders import TextLoader  # Fixed import
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings  # Updated
-from langchain_community.vectorstores import FAISS  # Fixed import
-from langchain_huggingface import HuggingFacePipeline  # Fixed import
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFacePipeline
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from langchain.chains import RetrievalQA
 import mlflow
+
+# Suppress NumPy deprecation warnings (harmless internals; specific to messages)
+warnings.filterwarnings("ignore", message=r"numpy\.core is deprecated")
+warnings.filterwarnings("ignore", message=r"numpy\.core\._multiarray_umath is deprecated")
 
 load_dotenv()
 
@@ -46,11 +51,19 @@ def test_rag_query(sample_data):
     texts = splitter.split_documents(documents)
     vectorstore = FAISS.from_documents(texts, embeddings)
 
-    # LLM (lightweight test; skip full pipeline if slow)
+    # LLM (lightweight test; set do_sample=True to match temperature)
     model_id = "google/flan-t5-base"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
-    pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer, max_new_tokens=50, temperature=0.5, device="cpu")
+    pipe = pipeline(
+        "text2text-generation", 
+        model=model, 
+        tokenizer=tokenizer, 
+        max_new_tokens=50, 
+        temperature=0.5,
+        do_sample=True,  # Enables sampling for temperature (no warning)
+        device="cpu"
+    )
     llm = HuggingFacePipeline(pipeline=pipe)
 
     qa_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
