@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4  # Updated to v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python 3.13
-      uses: actions/setup-python@v5  # Updated to v5
+      uses: actions/setup-python@v5
       with:
         python-version: '3.13'
 
@@ -39,6 +39,6 @@ jobs:
       run: |
         python scripts/mlops_automation.py  # End-to-end demo + MLflow log
 
-    - name: Verify MLflow Experiments
+    - name: Verify MLflow Experiments (Python API)
       run: |
-        mlflow experiments list  # Basic check (outputs experiment list)
+        python -c "import mlflow; experiments = mlflow.search_experiments(); print('Experiments found:', [exp.name for exp in experiments])"  # Correct API for listing
