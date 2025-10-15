@@ -18,65 +18,20 @@ A demo repository showcasing a Retrieval-Augmented Generation (RAG) pipeline for
 The following Mermaid diagram illustrates the high-level RAG pipeline with MLOps flow:
 
 ```mermaid
-graph TB
-    subgraph "Identity & Access Management"
-        AAD[Azure Active Directory<br/>OAuth 2.0 / OpenID / SAML]
-        KV[Azure Key Vault<br/>TLS/SSL Certs & Secrets]
-    end
-    subgraph "Networking & Security"
-        VNet[Virtual Network<br/>Subnets & NSGs]
-        AFW[Azure Firewall<br/>WAF & Threat Protection]
-        PL[Private Link<br/>Secure Endpoints]
-    end
-    subgraph "API & Web Services"
-        APIM[Azure API Management<br/>Gateway with Policies<br/>Rate Limiting / JWT Validation]
-        AKS[(AKS Cluster<br/>Containerized APIs<br/>Auto-Scaling Pods)]
-    end
-    subgraph "Data Layer"
-        Cosmos[Azure Cosmos DB<br/>Global Distribution<br/>Encrypted at Rest]
-    end
-    subgraph "Frontend"
-        SWA[Static Web Apps<br/>React Dashboard<br/>Custom Domain + TLS]
-    end
-    subgraph "Monitoring & Governance"
-        AM[Azure Monitor<br/>Logs & Alerts]
-        Sentinel[Azure Sentinel<br/>SIEM & Compliance]
-        Policy[Azure Policy<br/>Encryption / TLS Enforcement]
-    end
-    subgraph "CI/CD Pipeline"
-        GHA[GitHub Actions<br/>Terraform Plan/Apply<br/>Security Scans]
-    end
-
-    %% Flows
-    User[External Users / Apps] -->|HTTPS / Auth| SWA
-    SWA -->|API Calls| APIM
-    User -->|API Calls| APIM
-    APIM -->|Backend Requests| AKS
-    AKS <-->|Data Access| Cosmos
-    AKS -->|Secrets Fetch| KV
-    AAD -->|Token Validation| APIM
-    AAD -->|Auth| SWA
-    VNet -.->|Isolation| AKS
-    VNet -.->|Isolation| Cosmos
-    AFW -.->|Inbound/Outbound| APIM
-    PL -.->|Private Access| Cosmos
-    GHA -->|IaC Deploy| AKS
-    GHA -->|IaC Deploy| APIM
-    GHA -->|IaC Deploy| Cosmos
-    AM -.->|Telemetry| AKS
-    AM -.->|Telemetry| APIM
-    Sentinel -.->|Security Events| AFW
-    Policy -.->|Enforcement| VNet
-    Policy -.->|Enforcement| KV
-
-    classDef azureStyle fill:#0078D4,stroke:#005A9E,stroke-width:2px,color:#fff;
-    classDef securityStyle fill:#D13438,stroke:#A80000,stroke-width:2px,color:#fff;
-    classDef dataStyle fill:#00BCF2,stroke:#0088A8,stroke-width:2px,color:#fff;
-    classDef pipelineStyle fill:#107C10,stroke:#005A0E,stroke-width:2px,color:#fff;
-    class AAD,KV,AM,Sentinel,Policy azureStyle;
-    class AFW,PL securityStyle;
-    class Cosmos dataStyle;
-    class GHA pipelineStyle;
+graph TD
+    A["Document Input<br/>e.g., sample_doc.txt"] --> B["Load & Split<br/> LangChain TextLoader + CharacterTextSplitter"]
+    B --> C["Generate Embeddings<br/> HuggingFaceEmbeddings: all-MiniLM-L6-v2"]
+    C --> D["Vector Store Indexing<br/>FAISS.from_documents "]
+    E["User Query"] --> F["Retrieve Relevant Chunks<br/>vectorstore.as_retriever"]
+    D --> F
+    F --> G["Generate Response<br/>RetrievalQA + HuggingFacePipeline: Flan-T5-base"]
+    G --> H["Output Response"]
+    G --> I["Log to MLflow<br/>params, metrics, model w/ loader_fn"]
+    I --> J["Artifacts: FAISS Index + Serialized Chain"]
+    style A fill:#e1f5fe
+    style E fill:#f3e5f5
+    style H fill:#e8f5e8
+    style J fill:#fff3e0
 ```
 
 ## Prerequisites
