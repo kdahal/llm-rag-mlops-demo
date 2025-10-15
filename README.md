@@ -19,12 +19,12 @@ The following Mermaid diagram illustrates the high-level RAG pipeline with MLOps
 
 ```mermaid
 graph TD
-    A[Document Input<br/>(e.g., sample_doc.txt)] --> B[Load & Split<br/>(LangChain TextLoader + CharacterTextSplitter)]
-    B --> C[Generate Embeddings<br/>(HuggingFaceEmbeddings: all-MiniLM-L6-v2)]
-    C --> D[Vector Store Indexing<br/>(FAISS.from_documents)]
-    E[User Query] --> F[Retrieve Relevant Chunks<br/>(vectorstore.as_retriever)]
+    A(Document Input<br/>(e.g., sample_doc.txt)) --> B(Load & Split<br/>(LangChain TextLoader + CharacterTextSplitter))
+    B --> C(Generate Embeddings<br/>(HuggingFaceEmbeddings: all-MiniLM-L6-v2))
+    C --> D(Vector Store Indexing<br/>(FAISS.from_documents))
+    E(User Query) --> F(Retrieve Relevant Chunks<br/>(vectorstore.as_retriever))
     D --> F
-    F --> G[Generate Response<br/>(RetrievalQA + HuggingFacePipeline: Flan-T5-base)]
+    F --> G(Generate Response<br/>(RetrievalQA + HuggingFacePipeline: Flan-T5-base))
     G --> H[Output Response]
     G --> I[Log to MLflow<br/>(params, metrics, model w/ loader_fn)]
     I --> J[Artifacts: FAISS Index + Serialized Chain]
