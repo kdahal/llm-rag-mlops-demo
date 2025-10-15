@@ -1,19 +1,44 @@
-# This automates testing on every push/PR.
 name: CI for RAG MLOps
+
 on: [push, pull_request]
+
+permissions:
+  contents: read
+
 jobs:
   test:
+    name: Run Tests & MLOps Automation
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4  # Updated to v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5  # Updated to v5
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run RAG tests
-      run: python scripts/mlops_automation.py
-    - name: Log to MLflow (if MLflow server available)
-      run: mlflow experiments list  # Basic check
+
+    - name: Run pytest
+      run: |
+        pytest tests/ -v  # Unit/integration tests
+
+    - name: Run RAG MLOps Automation
+      run: |
+        python scripts/mlops_automation.py  # End-to-end demo + MLflow log
+
+    - name: Verify MLflow Experiments
+      run: |
+        mlflow experiments list  # Basic check (outputs experiment list)
