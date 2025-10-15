@@ -19,8 +19,8 @@ The following Mermaid diagram illustrates the high-level RAG pipeline with MLOps
 
 ```mermaid
 graph TD
-    A[Document Input<br/>e.g., sample_doc.txt] --> B[Load & Split<br/>LangChain TextLoader + CharacterTextSplitter]
-    B --> C[Generate Embeddings<br/>(HuggingFaceEmbeddings: all-MiniLM-L6-v2)]
+    A(Document Input<br/>e.g., sample_doc.txt)--> B(Load & Split<br/>LangChain TextLoader + CharacterTextSplitter)
+    B --> C(Generate Embeddings<br/>(HuggingFaceEmbeddings: all-MiniLM-L6-v2))
 
 ```
 
